@@ -959,7 +959,28 @@ const initFileInputWrappers = () => {
             label.setAttribute('for', input.id)
         }
 
-                // Update filename display and image preview on change
+        const container = wrapper.parentElement
+        const clearCheckbox = container?.querySelector('.form-image-clear input[type="checkbox"]')
+        const imagePreview = container?.querySelector('.form-image-preview')
+
+        if (clearCheckbox && imagePreview && clearCheckbox.dataset.eventyayPreviewBound !== 'true') {
+            clearCheckbox.dataset.eventyayPreviewBound = 'true'
+            clearCheckbox.addEventListener('change', () => {
+                if (clearCheckbox.checked) {
+                    input.value = ''
+                    nameSpan.textContent = noFileText
+                    imagePreview.classList.add('d-none')
+                } else if (
+                    imagePreview.querySelector('a')?.getAttribute('href') ||
+                    imagePreview.querySelector('img')?.getAttribute('src')
+                ) {
+                    imagePreview.classList.remove('d-none')
+                    imagePreview.querySelector('img')?.classList.remove('d-none')
+                }
+            })
+        }
+
+        // Update filename display and image preview on change
         input.addEventListener('change', () => {
             const hasFile = input.files && input.files.length > 0
 
