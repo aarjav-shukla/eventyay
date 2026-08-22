@@ -959,11 +959,40 @@ const initFileInputWrappers = () => {
             label.setAttribute('for', input.id)
         }
 
-        // Update filename display on change
+                // Update filename display and image preview on change
         input.addEventListener('change', () => {
-            nameSpan.textContent = (input.files && input.files.length > 0)
+            const hasFile = input.files && input.files.length > 0
+
+            nameSpan.textContent = hasFile
                 ? input.files[0].name
                 : noFileText
+
+            const imagePreview = input
+                .closest('.eventyay-file-pick-wrapper')
+                ?.parentElement
+                ?.querySelector('.form-image-preview')
+
+            if (!imagePreview) return
+
+            const image = imagePreview.querySelector('img')
+            const imageLink = imagePreview.querySelector('a')
+
+            if (hasFile) {
+                const reader = new FileReader()
+                reader.onload = (event) => {
+                    image.src = event.target.result
+                    image.classList.remove("d-none");
+                    imageLink.href = event.target.result
+                    imageLink.dataset.lightbox = event.target.result
+                    imagePreview.classList.remove('d-none')
+                }
+                reader.readAsDataURL(input.files[0])
+            } else {
+                image.removeAttribute('src')
+                image.classList.add("d-none");
+                imageLink.removeAttribute('href')
+                imagePreview.classList.add('d-none')
+            }
         })
     })
 }
