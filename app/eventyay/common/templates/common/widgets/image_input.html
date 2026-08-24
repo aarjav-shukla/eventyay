@@ -4,6 +4,7 @@
             loading="lazy"
             class="{% if widget.value and widget.value.url %}{% else %}d-none{% endif %}"
             {% if widget.value and widget.value.url %}src="{{ widget.value.url }}"{% endif %}
+            {% if widget.value and widget.value.url %}data-initial-src="{{ widget.value.url }}"{% endif %}
             alt="{{ widget.alt_text }}"
         >
     </a>
