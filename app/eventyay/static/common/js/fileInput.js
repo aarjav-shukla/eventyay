@@ -21,7 +21,7 @@ const updateFileInput = (input) => {
     const image = imagePreview.querySelector('img')
     const imageLink = imagePreview.querySelector('a')
 
-    if (hasSelection) {
+    if (hasSelection && input.files[0].type.startsWith('image/')) {
         const reader = new FileReader()
         reader.onload = (event) => {
             image.src = event.target.result
@@ -32,20 +32,19 @@ const updateFileInput = (input) => {
         }
         reader.readAsDataURL(input.files[0])
     } else {
-    const initialSrc = image.dataset.initialSrc
+        const initialSrc = image.dataset.initialSrc
 
-    if (initialSrc) {
-        image.src = initialSrc
-        image.classList.remove('d-none')
-        imageLink.href = initialSrc
-        imageLink.dataset.lightbox = initialSrc
-        imagePreview.classList.remove('d-none')
-    } else {
-        image.removeAttribute("src")
-        image.classList.add("d-none")
-        imageLink.removeAttribute("href")
-        imagePreview.classList.add("d-none")
-
+        if (initialSrc) {
+            image.src = initialSrc
+            image.classList.remove('d-none')
+            imageLink.href = initialSrc
+            imageLink.dataset.lightbox = initialSrc
+            imagePreview.classList.remove('d-none')
+        } else {
+            image.removeAttribute("src")
+            image.classList.add("d-none")
+            imageLink.removeAttribute("href")
+            imagePreview.classList.add("d-none")
         }
     }
 }

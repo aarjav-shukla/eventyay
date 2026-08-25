@@ -1,8 +1,8 @@
-<div class="form-image-preview{% if widget.value and widget.value.url %}{% else %} d-none{% endif %}">
+<div class="form-image-preview{% if not widget.value or not widget.value.url %} d-none{% endif %}">
     <a {% if widget.value and widget.value.url %}href="{{ widget.value.url }}"{% endif %} data-lightbox>
         <img
             loading="lazy"
-            class="{% if widget.value and widget.value.url %}{% else %}d-none{% endif %}"
+            class="{% if not widget.value or not widget.value.url %}d-none{% endif %}"
             {% if widget.value and widget.value.url %}src="{{ widget.value.url }}"{% endif %}
             {% if widget.value and widget.value.url %}data-initial-src="{{ widget.value.url }}"{% endif %}
             alt="{{ widget.alt_text }}"
