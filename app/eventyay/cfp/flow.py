@@ -4,6 +4,7 @@ import logging
 from collections import OrderedDict
 from contextlib import suppress
 from pathlib import Path
+from types import SimpleNamespace
 
 from django.conf import settings
 from django.contrib import messages
@@ -233,7 +234,20 @@ class FormFlowStep(TemplateFlowStep):
     def get_form_initial(self):
         initial_data = self.cfp_session.get('initial', {}).get(self.identifier, {})
         previous_data = self.cfp_session.get('data', {}).get(self.identifier, {})
-        return copy.deepcopy({**initial_data, **previous_data})
+        form_initial = copy.deepcopy({**initial_data, **previous_data})
+
+        saved_files = self.cfp_session.get('files', {}).get(self.identifier, {})
+        for field, file_data in saved_files.items():
+            if isinstance(file_data, list):
+                continue
+
+            if file_data.get('content_type', '').startswith('image/'):
+                form_initial[field] = SimpleNamespace(
+                    name=file_data['name'],
+                    url=self.file_storage.url(file_data['tmp_name']),
+                )
+
+        return form_initial
 
     def get_form(self, from_storage=False):
         # Cache form initial data to avoid repeated work
