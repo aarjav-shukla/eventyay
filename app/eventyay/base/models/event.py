@@ -758,11 +758,13 @@ class Event(
         mail = '{base}mails/'
         compose_mails = '{mail}compose'
         compose_mails_sessions = '{compose_mails}/sessions/'
+        compose_mails_sessions_recipients = '{compose_mails}/sessions/recipients'
         compose_mails_teams = '{compose_mails}/teams/'
         send_drafts_reminder = '{compose_mails}/reminders'
         mail_templates = '{mail}templates/'
         new_template = '{mail_templates}new/'
         outbox = '{mail}outbox/'
+        drafts = '{mail}drafts/'
         sent_mails = '{mail}sent'
         send_outbox = '{outbox}send'
         purge_outbox = '{outbox}purge'
@@ -1917,15 +1919,21 @@ class Event(
         Returns a dictionary of initialized payment providers mapped by their identifiers.
         """
         from ..signals import register_payment_providers
+        from ..meetup import is_meetup_event
 
         if not cached or not hasattr(self, '_cached_payment_providers'):
             responses = register_payment_providers.send(self)
             providers = {}
+            is_meetup = is_meetup_event(self)
             for receiver, response in responses:
                 if not isinstance(response, list):
                     response = [response]
                 for p in response:
                     pp = p(self)
+                    if is_meetup and pp.identifier == 'stripe_settings':
+                        continue
+                    if not is_meetup and pp.identifier == 'stripe' and p.__module__ == 'eventyay.base.payment':
+                        continue
                     providers[pp.identifier] = pp
 
             self._cached_payment_providers = OrderedDict(
@@ -3238,7 +3246,7 @@ class Event(
 
         :class:`~eventyay.base.models.mail.QueuedMail` objects.
         """
-        return self.queued_mails.filter(sent__isnull=True).count()
+        return self.queued_mails.filter(sent__isnull=True, is_draft=False).count()
 
 
 class EventExtraLink(OrderedModel, PretalxModel):
