@@ -229,7 +229,10 @@ class TemplateFlowStep(TemplateResponseMixin, BaseCfPStep):
 
 class FormFlowStep(TemplateFlowStep):
     form_class = None
-    file_storage = FileSystemStorage(str(Path(settings.MEDIA_ROOT) / 'cfp_uploads'))
+    file_storage = FileSystemStorage(
+        str(Path(settings.MEDIA_ROOT) / 'cfp_uploads'),
+        base_url=f'{settings.MEDIA_URL.rstrip("/")}/cfp_uploads/',
+    )
 
     def get_form_initial(self):
         initial_data = self.cfp_session.get('initial', {}).get(self.identifier, {})

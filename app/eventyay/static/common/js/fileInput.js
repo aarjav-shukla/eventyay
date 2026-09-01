@@ -87,6 +87,30 @@ const wrapFileInput = (input) => {
     }
 
     input.addEventListener('change', () => updateFileInput(input))
+
+    const fieldContainer = input.closest('.eventyay-file-pick-wrapper')?.parentElement
+
+    const clearCheckbox = fieldContainer?.querySelector('.form-image-clear input[type="checkbox"]')
+
+    if (clearCheckbox) {
+        clearCheckbox.addEventListener('change', () => {
+            const imagePreview = fieldContainer.querySelector('.form-image-preview')
+            if (!imagePreview) return
+
+            const image = imagePreview.querySelector('img')
+            const imageLink = imagePreview.querySelector('a')
+
+            if (clearCheckbox.checked) {
+                image.removeAttribute('src')
+                image.classList.add('d-none')
+                imageLink.removeAttribute('href')
+                imagePreview.classList.add('d-none')
+            } else {
+                updateFileInput(input)
+            }
+        })
+    }
+
     updateFileInput(input)
 }
 
