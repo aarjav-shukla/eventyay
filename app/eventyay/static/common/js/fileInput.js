@@ -4,6 +4,9 @@ const HAS_SELECTION_CLASS = 'file-input-has-selection'
 let fileInputIdCounter = 0
 
 const updateFileInput = (input) => {
+    const previewRevision =Number(input.dataset.eventyayPreviewRevision || 0) + 1
+    input.dataset.eventyayPreviewRevision = previewRevision
+
     const hasSelection = Boolean(input.files?.length)
     input.classList.toggle(HAS_SELECTION_CLASS, hasSelection)
 
@@ -24,6 +27,8 @@ const updateFileInput = (input) => {
     if (hasSelection && input.files[0].type.startsWith('image/')) {
         const reader = new FileReader()
         reader.onload = (event) => {
+            if (Number(input.dataset.eventyayPreviewRevision) !== previewRevision) return
+
             image.src = event.target.result
             image.classList.remove('d-none')
             imageLink.href = event.target.result
@@ -101,6 +106,8 @@ const wrapFileInput = (input) => {
             const imageLink = imagePreview.querySelector('a')
 
             if (clearCheckbox.checked) {
+                input.dataset.eventyayPreviewRevision =
+                    Number(input.dataset.eventyayPreviewRevision || 0) + 1
                 image.removeAttribute('src')
                 image.classList.add('d-none')
                 imageLink.removeAttribute('href')

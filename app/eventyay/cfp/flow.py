@@ -244,7 +244,7 @@ class FormFlowStep(TemplateFlowStep):
             if isinstance(file_data, list):
                 continue
 
-            if file_data.get('content_type', '').startswith('image/'):
+            if (file_data.get('content_type') or '').startswith('image/'):
                 form_initial[field] = SimpleNamespace(
                     name=file_data['name'],
                     url=self.file_storage.url(file_data['tmp_name']),
